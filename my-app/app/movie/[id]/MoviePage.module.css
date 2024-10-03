@@ -1,0 +1,82 @@
+.moviePage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.movieHeader {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.releaseYear {
+  margin-left: 10px;
+  font-size: 1.2em;
+  color: #666;
+}
+
+.movieContent {
+  display: flex;
+  gap: 30px;
+}
+
+.posterContainer {
+  flex-shrink: 0;
+}
+
+.poster {
+  border-radius: 10px;
+}
+
+.movieDetails {
+  flex-grow: 1;
+}
+
+.ratings {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.averageRating, .userRating {
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.voteCount {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.ratingButtons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.ratingButton {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ratingButton:hover {
+  background-color: #0056b3;
+}
+
+.overview, .releaseInfo {
+  margin-top: 20px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5em;
+}

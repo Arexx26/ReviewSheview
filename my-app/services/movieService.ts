@@ -1,5 +1,9 @@
-const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-const BASE_URL = 'https://api.themoviedb.org/3';
+'use client';
+import { API_CONFIG } from '@/config/api';
+import React from 'react';
+
+const API_KEY = API_CONFIG.TMDB_API_KEY;
+const BASE_URL = API_CONFIG.TMDB_BASE_URL;
 
 export async function getMovieDetails(movieId: number) {
   const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`);

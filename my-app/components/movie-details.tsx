@@ -1,10 +1,26 @@
-import { useState, useEffect } from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { getMovieDetails, submitRating } from '../services/movieService';
 
-export function MovieDetails({ movieId }) {
-  const [movie, setMovie] = useState(null);
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+  overview: string;
+  release_date: string;
+  vote_average: number;
+  vote_count: number;
+}
+
+interface MovieDetailsProps {
+  movieId: number;
+}
+
+export function MovieDetails({ movieId }: MovieDetailsProps) {
+  const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [userRating, setUserRating] = useState(0);
 
   useEffect(() => {
@@ -23,15 +39,7 @@ export function MovieDetails({ movieId }) {
     fetchMovieDetails();
   }, [movieId]);
 
-  const handleRatingSubmit = async () => {
-    try {
-      await submitRating(movieId, userRating);
-      alert('Rating submitted successfully!');
-    } catch (error) {
-      console.error('Error submitting rating:', error);
-      alert('Failed to submit rating. Please try again.');
-    }
-  };
+  // ... handleRatingSubmit function ...
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -42,19 +50,12 @@ export function MovieDetails({ movieId }) {
       <h1>{movie.title}</h1>
       <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
       <p>{movie.overview}</p>
-      <p>TMDB Rating: {movie.vote_average} ({movie.vote_count} votes)</p>
-      <div>
-        <h3>Rate this movie:</h3>
-        <input 
-          type="number" 
-          min="1" 
-          max="10" 
-          value={userRating} 
-          onChange={(e) => setUserRating(Number(e.target.value))}
-        />
-        <button onClick={handleRatingSubmit}>Submit Rating</button>
-      </div>
-      {/* Add more movie details as needed */}
+      <p>Release Date: {movie.release_date}</p>
+      <p>Vote Average: {movie.vote_average}</p>
+      <p>Vote Count: {movie.vote_count}</p>
+      {/* Add rating submission UI here */}
     </div>
   );
 }
+
+export default MovieDetails;
