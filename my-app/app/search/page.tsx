@@ -64,6 +64,15 @@ export default function SearchPage() {
     return dateString ? new Date(dateString).getFullYear() : 'N/A';
   };
 
+// Function to get the correct link based on media type
+const getMediaLink = (item: SearchResult) => {
+    //const baseUrl = 'https://api.themoviedb.org/3'; // TMDB API base URL
+    return item.media_type === 'movie' 
+      ? `/movie/${item.id}`
+      : `/tv/${item.id}`;
+  };
+
+
   // The component's UI
   return (
     <div>
@@ -89,7 +98,8 @@ export default function SearchPage() {
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {results.map((item: SearchResult) => (
             <li key={item.id} className="border p-4 rounded-lg">
-              <Link href={`/movie/${item.id}`} className="flex items-center space-x-4">
+              {/* Updated Link component with dynamic href */}
+              <Link href={getMediaLink(item)} className="flex items-center space-x-4">
                 {/* Thumbnail */}
                 <div className="flex-shrink-0">
                   {item.poster_path ? (
