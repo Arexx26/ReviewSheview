@@ -21,7 +21,7 @@ export default function TVPage() {
 
   useEffect(() => {
     const fetchTVDetails = async () => {
-      const response = await fetch(`/api/tv/${id}`);
+      const response = await fetch(`/tv/${id}`);
       const data = await response.json();
       setTVData(data);
     };
