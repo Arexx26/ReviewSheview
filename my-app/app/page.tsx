@@ -3,7 +3,19 @@ import { MovieDetails } from "@/components/movie-details"
 
 // This is the main page component for individual movie details
 // It's using the App Router structure of Next.js
-export default function Page({ params }: { params: { movieId: string } }) {
+
+import HomePage from './HomePage/page';
+
+
+
+
+
+
+export default function Home() {
+  return <HomePage />;
+}
+
+export  function Page({ params }: { params: { movieId: string } }) {
   // The component receives a 'params' prop from Next.js routing
   // 'params' contains route parameters, in this case, 'movieId'
 
