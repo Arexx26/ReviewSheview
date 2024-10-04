@@ -18,7 +18,6 @@ import Link from 'next/link';
 // Link prefetches the linked page in the background, making navigation feel instant
 import Image from 'next/image'; // Import Next.js Image component for optimized image loading
 
-
 // Defining the structure of a search result item
 interface SearchResult {
     id: number;

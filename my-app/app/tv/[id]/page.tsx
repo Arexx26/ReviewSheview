@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import styles from './TVPage.module.css'; // You'll need to create this CSS module
-
+import { API_CONFIG } from '@/config/api';
 interface TVData {
   id: number;
-  title: string;
+  name: string;
   poster_path: string;
   overview: string;
-  release_date: string;
+  first_air_date: string;
   vote_average: number;
   vote_count: number;
 }
@@ -21,10 +21,25 @@ export default function TVPage() {
 
   useEffect(() => {
     const fetchTVDetails = async () => {
-      const response = await fetch(`/tv/${id}`);
-      const data = await response.json();
-      setTVData(data);
-    };
+      // Fetch movie details from our API
+      // The actual URL would be constructed using environment variables, e.g.:
+      // `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/movie/${id}`
+     
+      const url = `${API_CONFIG.TMDB_BASE_URL}/tv/${id}?api_key=${API_CONFIG.TMDB_API_KEY}`;
+
+      console.log('Fetching TV details from:', url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('Received TV data:', data);
+    setTVData(data);
+  } catch (error) {
+    console.error('Error fetching TV details:', error);
+  }
+};
 
     if (id) {
       fetchTVDetails();
@@ -48,8 +63,8 @@ export default function TVPage() {
   return (
     <div className={styles.TVPagePage}>
       <div className={styles.TVHeader}>
-        <h1>{TVData.title}</h1>
-        <p className={styles.releaseYear}>({new Date(TVData.release_date).getFullYear()})</p>
+        <h1>{TVData.name}</h1>
+        <p className={styles.releaseYear}>({new Date(TVData.first_air_date).getFullYear()})</p>
       </div>
       
       <div className={styles.TVContent}>
@@ -57,7 +72,7 @@ export default function TVPage() {
   {TVData.poster_path ? (
     <Image 
       src={`https://image.tmdb.org/t/p/w500${TVData.poster_path}`}
-      alt={`${TVData.title} poster`}
+      alt={`${TVData.name} poster`}
       width={300}
       height={450}
       className={styles.poster}
@@ -108,7 +123,7 @@ export default function TVPage() {
           
           <div className={styles.releaseInfo}>
             <h3>Release Date</h3>
-            <p>{new Date(TVData.release_date).toLocaleDateString()}</p>
+            <p>{new Date(TVData.first_air_date).toLocaleDateString()}</p>
           </div>
         </div>
       </div>

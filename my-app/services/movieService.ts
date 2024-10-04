@@ -1,6 +1,6 @@
 'use client';
 import { API_CONFIG } from '@/config/api';
-import React from 'react';
+//import React from 'react';
 
 const API_KEY = API_CONFIG.TMDB_API_KEY;
 const BASE_URL = API_CONFIG.TMDB_BASE_URL;

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import styles from './MoviePage.module.css'; // Importing CSS styles for this component
+import { API_CONFIG } from '@/config/api';
 
 // Define the structure of our movie data
 interface MovieData {
@@ -30,7 +31,11 @@ export default function MoviePage() {
         // Fetch movie details from our API
         // The actual URL would be constructed using environment variables, e.g.:
         // `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/movie/${id}`
-        const response = await fetch(`/api/movie/${id}`);
+       
+        const url = `${API_CONFIG.TMDB_BASE_URL}/movie/${id}?api_key=${API_CONFIG.TMDB_API_KEY}`;
+
+        console.log(url);
+        const response = await fetch(url);
         const data = await response.json();
         setMovieData(data);
       };
