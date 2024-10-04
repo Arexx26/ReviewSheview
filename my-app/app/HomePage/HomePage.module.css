@@ -1,0 +1,42 @@
+.homePage {
+    padding: 2rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .movieGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .movieCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .poster {
+    border-radius: 8px;
+    transition: transform 0.2s;
+  }
+  
+  .movieCard:hover .poster {
+    transform: scale(1.05);
+  }
+  
+  .movieTitle {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .rating {
+    font-size: 0.9rem;
+    color: #666;
+  }
