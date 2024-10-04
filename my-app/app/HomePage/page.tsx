@@ -1,24 +1,28 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { API_CONFIG } from '@/config/api';
-import styles from './HomePage.module.css'; // You'll need to create this CSS module
+import styles from './HomePage.module.css';
 
-interface Movie {
+interface Media {
   id: number;
-  title: string;
+  title?: string;
+  name?: string;
   poster_path: string;
   vote_average: number;
 }
 
 export default function HomePage() {
-  const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+  const [popularMovies, setPopularMovies] = useState<Media[]>([]);
+  const [popularTVSeries, setPopularTVSeries] = useState<Media[]>([]);
+  const movieRowRef = useRef<HTMLDivElement>(null);
+  const tvRowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchPopularMovies = async () => {
-      const url = `${API_CONFIG.TMDB_BASE_URL}/movie/popular?language=en-US&page=1`;
+    const fetchPopularMedia = async (mediaType: 'movie' | 'tv', setter: React.Dispatch<React.SetStateAction<Media[]>>) => {
+      const url = `${API_CONFIG.TMDB_BASE_URL}/${mediaType}/popular?language=en-US&page=1`;
       const options = {
         method: 'GET',
         headers: {
@@ -33,33 +37,61 @@ export default function HomePage() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setPopularMovies(data.results);
+        setter(data.results); // Get all results
       } catch (error) {
-        console.error('Error fetching popular movies:', error);
+        console.error(`Error fetching popular ${mediaType}:`, error);
       }
     };
 
-    fetchPopularMovies();
+    fetchPopularMedia('movie', setPopularMovies);
+    fetchPopularMedia('tv', setPopularTVSeries);
   }, []);
 
-  return (
-    <div className={styles.homePage}>
-      <h1 className={styles.title}>Popular Movies</h1>
-      <div className={styles.movieGrid}>
-        {popularMovies.map((movie) => (
-          <Link href={`/movie/${movie.id}`} key={movie.id} className={styles.movieCard}>
+  const scroll = (direction: 'left' | 'right', ref: React.RefObject<HTMLDivElement>) => {
+    if (ref.current) {
+      const { scrollLeft, clientWidth } = ref.current;
+      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      ref.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
+
+  const renderMediaRow = (mediaList: Media[], type: 'movie' | 'tv', ref: React.RefObject<HTMLDivElement>) => (
+    <div className={styles.mediaRowContainer}>
+      <button className={`${styles.scrollButton} ${styles.leftButton}`} onClick={() => scroll('left', ref)}>
+        &lt;
+      </button>
+      <div className={styles.mediaRow} ref={ref}>
+        {mediaList.map((media) => (
+          <Link href={`/${type}/${media.id}`} key={media.id} className={styles.mediaCard}>
             <Image
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={`${movie.title} poster`}
+              src={`https://image.tmdb.org/t/p/w500${media.poster_path}`}
+              alt={`${media.title || media.name} poster`}
               width={200}
               height={300}
               className={styles.poster}
             />
-            <h2 className={styles.movieTitle}>{movie.title}</h2>
-            <p className={styles.rating}>Rating: {movie.vote_average.toFixed(1)}</p>
+            <h3 className={styles.mediaTitle}>{media.title || media.name}</h3>
+            <p className={styles.rating}>Rating: {media.vote_average.toFixed(1)}</p>
           </Link>
         ))}
       </div>
+      <button className={`${styles.scrollButton} ${styles.rightButton}`} onClick={() => scroll('right', ref)}>
+        &gt;
+      </button>
+    </div>
+  );
+
+  return (
+    <div className={styles.container}>
+    <div className={styles.homePage}>
+      <h1 className={styles.title}>Popular Media</h1>
+      
+      <h2 className={styles.sectionTitle}>Popular Movies</h2>
+      {renderMediaRow(popularMovies, 'movie', movieRowRef)}
+      
+      <h2 className={styles.sectionTitle}>Popular TV Series</h2>
+      {renderMediaRow(popularTVSeries, 'tv', tvRowRef)}
+    </div>
     </div>
   );
 }

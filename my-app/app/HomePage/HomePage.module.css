@@ -3,40 +3,120 @@
   }
   
   .title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-  
-  .movieGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  
-  .movieCard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    font-size: 3rem;
+    margin-bottom: 2rem;
     text-align: center;
+    color: var(--navy);
+    text-shadow: 2px 2px var(--gold);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+    margin: 2rem 0 1rem;
+    color: var(--saffron);
+    border-bottom: 2px solid var(--green);
+    padding-bottom: 0.5rem;
+  }
+  
+  .mediaRowContainer {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mediaRow {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+  
+  .mediaRow::-webkit-scrollbar { 
+    display: none;
+  }
+  
+  .mediaCard {
+    flex: 0 0 auto;
+    width: 200px;
     text-decoration: none;
-    color: inherit;
+    color: var(--navy);
+    transition: transform 0.2s;
+    background-color: var(--white);
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mediaCard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
   
   .poster {
     border-radius: 8px;
-    transition: transform 0.2s;
+    object-fit: cover;
+    border: 3px solid var(--gold);
   }
   
-  .movieCard:hover .poster {
-    transform: scale(1.05);
-  }
-  
-  .movieTitle {
+  .mediaTitle {
     margin-top: 0.5rem;
     font-size: 1rem;
+    text-align: center;
+    color: var(--navy);
+    font-weight: bold;
   }
   
   .rating {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--green);
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .scrollButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--saffron);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .leftButton {
+    left: 10px;
+  }
+  
+  .rightButton {
+    right: 10px;
+  }
+  
+  .scrollButton:hover {
+    background-color: var(--green);
+  }
+  
+  @media (max-width: 768px) {
+    .title {
+      font-size: 2rem;
+    }
+  
+    .sectionTitle {
+      font-size: 1.5rem;
+    }
+  
+    .mediaCard {
+      width: 150px;
+    }
   }

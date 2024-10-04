@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
 
 @layer utilities {
   .text-balance {
@@ -12,6 +9,23 @@ body {
   }
 }
 
+:root {
+  --saffron: #FF9933;
+  --white: #FFFFFF;
+  --green: #138808;
+  --navy: #000080;
+  --gold: #FFD700;
+}
+
+body {
+  background-color: var(--white);
+  background-image: 
+    radial-gradient(var(--saffron) 3px, transparent 3px),
+    radial-gradient(var(--green) 3px, transparent 3px);
+  background-size: 50px 50px;
+  background-position: 0 0, 25px 25px;
+  font-family: 'Arial', sans-serif;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
