@@ -3,48 +3,40 @@
   }
   
   .title {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
   }
   
-  .sectionTitle {
-    font-size: 1.8rem;
-    margin: 2rem 0 1rem;
-  }
-  
-  .mediaRow {
-    display: flex;
-    overflow-x: auto;
+  .movieGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
-    padding-bottom: 1rem;
   }
   
-  .mediaCard {
-    flex: 0 0 auto;
-    width: 200px;
+  .movieCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.2s;
-  }
-  
-  .mediaCard:hover {
-    transform: scale(1.05);
   }
   
   .poster {
     border-radius: 8px;
-    object-fit: cover;
+    transition: transform 0.2s;
   }
   
-  .mediaTitle {
+  .movieCard:hover .poster {
+    transform: scale(1.05);
+  }
+  
+  .movieTitle {
     margin-top: 0.5rem;
     font-size: 1rem;
-    text-align: center;
   }
   
   .rating {
     font-size: 0.9rem;
     color: #666;
-    text-align: center;
   }
