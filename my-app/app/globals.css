@@ -17,11 +17,7 @@
   --gold: #FFD700;
 }
 
-body {
-  background-color: var(--background);
-}
-
-
+/* */
 @layer base {
   :root {
     --background: 0 0% 100%;

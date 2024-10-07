@@ -11,18 +11,13 @@ import HomePage from './HomePage/page';
 
 
 
-export default function Home() {
+export default function Page({ params }: { params?: { movieId: string } }) {
+  // If there's a movieId in the params, show MovieDetails
+  // Otherwise, show the HomePage
+  if (params?.movieId) {
+    return <MovieDetails movieId={parseInt(params.movieId, 10)} />
+  }
+
+  // If no movieId, render the HomePage
   return <HomePage />;
-}
-
-export  function Page({ params }: { params: { movieId: string } }) {
-  // The component receives a 'params' prop from Next.js routing
-  // 'params' contains route parameters, in this case, 'movieId'
-
-  return (
-    // Render the MovieDetails component
-    // Convert the movieId from a string to an integer
-    // The '10' in parseInt specifies base 10 (decimal) numbering system
-    <MovieDetails movieId={parseInt(params.movieId, 10)} />
-  )
 }

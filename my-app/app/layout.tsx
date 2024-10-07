@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from 'next/link'
 import localFont from "next/font/local";
 import "./globals.css";
-import styles from './layout.module.css'
+import Providers from "./providers";
+import { Navigation } from "../components/Navigation";
+//import styles from './layout.module.css'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,18 +32,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header>
-          <nav>
-            <ul>
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/search">Search</Link></li>
-              {/* Add more navigation items as needed */}
-            </ul>
-          </nav>
-        </header>
+         <Providers>
+          <header>
+            <nav>
+              <ul>
+                <li><Link href="/">Home</Link></li>
+                <li><Link href="/search">Search</Link></li>
+                {/* Add more navigation items as needed */}
+              </ul>
+            </nav>
+          </header>
         <main>
+          <Navigation />
           {children}
         </main>
+        </Providers>
       </body>
     </html>
   );
