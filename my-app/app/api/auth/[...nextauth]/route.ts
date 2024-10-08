@@ -23,7 +23,7 @@ const handler = NextAuth({
     AppleProvider({
       clientId: process.env.APPLE_ID as string,
       clientSecret: process.env.APPLE_SECRET as string,
-      callbackUrl: "https://local.apple-signin.flickmate.com/api/auth/callback/apple",
+      //callbackUrl: "https://local.apple-signin.flickmate.com/api/auth/callback/apple",
     }),
     EmailProvider({
       server: {

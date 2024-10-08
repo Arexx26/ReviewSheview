@@ -12,8 +12,9 @@
   }
   
   .sectionTitle {
-    font-size: 2rem;
-    margin: 2rem 0 1rem;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
     color: var(--saffron);
     border-bottom: 2px solid var(--green);
     padding-bottom: 0.5rem;
@@ -34,7 +35,7 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     gap: 1rem;
-    padding: 1rem 0;
+    padding: 10px 0;
   }
   
   .mediaRow::-webkit-scrollbar { 
@@ -59,14 +60,16 @@
   }
   
   .poster {
+    width: 100%;
+    height: auto;
     border-radius: 8px;
     object-fit: cover;
     border: 3px solid var(--gold);
   }
   
   .mediaTitle {
-    margin-top: 0.5rem;
-    font-size: 1rem;
+    margin-top: 8px;
+    font-size: 14px;
     text-align: center;
     color: var(--navy);
     font-weight: bold;
@@ -83,24 +86,24 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: var(--saffron);
-    color: var(--white);
+    background-color: rgba(255, 255, 255, 0.7);
     border: none;
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1;
   }
   
   .leftButton {
-    left: 10px;
+    left: 0;
   }
   
   .rightButton {
-    right: 10px;
+    right: 0;
   }
   
   .scrollButton:hover {
@@ -119,4 +122,73 @@
     .mediaCard {
       width: 150px;
     }
+  }
+  
+  .container {
+    padding: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .mediaRow {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 20px;
+  }
+
+  .mediaItem {
+    flex: 0 0 auto;
+    width: 100px;
+    margin-right: 16px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .poster {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .placeholderPoster {
+    width: 100px;
+    height: 150px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: #666;
+    font-size: 0.8rem;
+  }
+
+  .mediaTitle {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ratingContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+  }
+
+  .star {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    color: #ccc;
+    transition: color 0.2s;
+  }
+
+  .star:hover,
+  .star:hover ~ .star {
+    color: #ffd700;
   }
