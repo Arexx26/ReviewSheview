@@ -192,3 +192,66 @@
   .star:hover ~ .star {
     color: #ffd700;
   }
+
+  .starFilled {
+    color: #ffd700;
+  }
+  
+  .movieDetailsContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .movieTitle {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--navy);
+  }
+
+  .movieContent {
+    display: flex;
+    gap: 20px;
+  }
+
+  .moviePoster {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .movieInfo {
+    flex: 1;
+  }
+
+  .movieOverview {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .movieReleaseDate,
+  .movieRating {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .userRatingContainer {
+    margin-top: 20px;
+  }
+
+  .userRatingTitle {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--saffron);
+  }
+
+  @media (max-width: 768px) {
+    .movieContent {
+      flex-direction: column;
+    }
+
+    .moviePoster {
+      align-self: center;
+    }
+  }

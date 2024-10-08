@@ -5,6 +5,10 @@ export async function POST(req: Request) {
   try {
     const { mediaId, mediaType, rating, userId } = await req.json();
 
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
     // Create or update the media entry
     await prisma.media.upsert({
       where: { id: mediaId },
@@ -20,21 +24,21 @@ export async function POST(req: Request) {
     await prisma.rating.upsert({
       where: {
         userId_mediaId: {
-          userId,
-          mediaId,
+          userId: userId,
+          mediaId: mediaId,
         },
       },
       update: { value: rating },
       create: {
         value: rating,
-        userId,
-        mediaId,
+        userId: userId,
+        mediaId: mediaId,
       },
     });
 
     // Calculate and update the average rating for the media
     const averageRating = await prisma.rating.aggregate({
-      where: { mediaId },
+      where: { mediaId: mediaId },
       _avg: { value: true },
     });
 
@@ -57,7 +61,7 @@ export async function POST(req: Request) {
     for (const group of userGroups) {
       const groupAverageRating = await prisma.rating.aggregate({
         where: {
-          mediaId,
+          mediaId: mediaId,
           user: {
             groups: {
               some: {
@@ -73,13 +77,13 @@ export async function POST(req: Request) {
         where: {
           groupId_mediaId: {
             groupId: group.id,
-            mediaId,
+            mediaId: mediaId,
           },
         },
         update: { averageRating: groupAverageRating._avg?.value || 0 },
         create: {
           groupId: group.id,
-          mediaId,
+          mediaId: mediaId,
           averageRating: groupAverageRating._avg?.value || 0,
         },
       });

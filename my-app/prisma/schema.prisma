@@ -44,11 +44,13 @@
    model User {
      id               String            @id @default(cuid())
      name             String?
-     email            String            @unique
-     ratings          Rating[]
-     groups           Group[]
+     email            String?           @unique
+     emailVerified    DateTime?
+     image            String?
      accounts         Account[]
      sessions         Session[]
+     ratings          Rating[]
+     groups           Group[]
      groupMemberships GroupMembership[]
    }
 
@@ -84,22 +86,23 @@
      user      User     @relation(fields: [userId], references: [id])
      media     Media    @relation(fields: [mediaId], references: [id])
      createdAt DateTime @default(now())
+
+     @@unique([userId, mediaId])
    }
 
    model GroupRating {
-     id             String @id @default(cuid())
-     groupId        String
-     mediaId        Int
-     group          Group  @relation(fields: [groupId], references: [id])
-     media          Media  @relation(fields: [mediaId], references: [id])
-     averageRating  Float
+     id            String @id @default(cuid())
+     groupId       String
+     mediaId       Int
+     group         Group  @relation(fields: [groupId], references: [id])
+     media         Media  @relation(fields: [mediaId], references: [id])
+     averageRating Float
    }
 
    model Media {
-     id             Int           @id
-     title          String
-     type           String        // 'movie' or 'tv'
-     ratings        Rating[]
-     groupRatings   GroupRating[]
-     averageRating  Float         @default(0)
+     id           Int           @id @default(autoincrement())
+     title        String
+     ratings      Rating[]
+     groupRatings GroupRating[]
+     // Add other fields as necessary
    }

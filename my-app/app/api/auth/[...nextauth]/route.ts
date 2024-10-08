@@ -1,59 +1,54 @@
-import NextAuth from "next-auth"
+import NextAuth, { DefaultSession, AuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import FacebookProvider from "next-auth/providers/facebook"
-import AppleProvider from "next-auth/providers/apple"
-import EmailProvider from "next-auth/providers/email"
-import nodemailer from "nodemailer" 
-
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient()
+import { PrismaClient } from "@prisma/client"
 
-const handler = NextAuth({
-    adapter: PrismaAdapter(prisma),
+// Import PrismaClient and create a singleton instance
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientSingleton | undefined
+}
+
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+// Extend the built-in session type
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user?: {
+      id: string;
+    } & DefaultSession["user"]
+  }
+}
+
+if (!process.env.GOOGLE_ID || !process.env.GOOGLE_SECRET) {
+  throw new Error('Missing Google OAuth credentials');
+}
+
+export const authOptions: AuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID as string,
-      clientSecret: process.env.GOOGLE_SECRET as string,
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
     }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_ID as string,
-      clientSecret: process.env.FACEBOOK_SECRET as string,
-    }),
-    AppleProvider({
-      clientId: process.env.APPLE_ID as string,
-      clientSecret: process.env.APPLE_SECRET as string,
-      //callbackUrl: "https://local.apple-signin.flickmate.com/api/auth/callback/apple",
-    }),
-    EmailProvider({
-      server: {
-          host: "smtp.ethereal.email",
-          port: 587,
-          auth: {
-              user: "kpwkjxw4hzb37wln@ethereal.email",
-              pass: "Gr7byRTdkyZutdxABg"
-          }
-      },
-      from: "noreply@example.com",
-      async sendVerificationRequest({
-          identifier: email,
-          url,
-          provider: { server, from }
-      }) {
-          const { host } = new URL(url)
-          const transport = nodemailer.createTransport(server)
-          await transport.sendMail({
-              to: email,
-              from,
-              subject: `Sign in to ${host}`,
-              text: `Sign in to ${host}\n${url}\n\n`,
-              html: `<html><body><p>Sign in to ${host}</p><p><a href="${url}">Click here to sign in</a></p></body></html>`
-          })
-      },
-  }),
   ],
-  // Add a database here if you want to persist user data
-  // database: process.env.DATABASE_URL,
-})
+  callbacks: {
+    session: ({ session, user }) => {
+      if (session?.user) {
+        session.user.id = user.id;
+      }
+      return session;
+    },
+  },
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

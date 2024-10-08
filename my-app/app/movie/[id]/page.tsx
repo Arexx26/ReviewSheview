@@ -1,139 +1,80 @@
 'use client'; // This directive indicates that this is a client-side component
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import styles from './MoviePage.module.css'; // Importing CSS styles for this component
 import { API_CONFIG } from '@/config/api';
+import styles from '../../HomePage/HomePage.module.css';
+import RatingStars from '@/components/RatingStars';
 
 // Define the structure of our movie data
-interface MovieData {
+interface MovieDetails {
   id: number;
   title: string;
-  poster_path: string;
   overview: string;
+  poster_path: string | null;
   release_date: string;
   vote_average: number;
-  vote_count: number;
 }
 
-export default function MoviePage() {
-    // Extract the 'id' parameter from the URL
-    const { id } = useParams();
-    
-    // State to store the movie data and user's rating
-    const [movieData, setMovieData] = useState<MovieData | null>(null);
-    const [userRating, setUserRating] = useState<number | null>(null);
-  
-    // Effect hook to fetch movie details when the component mounts or 'id' changes
-    useEffect(() => {
-      const fetchMovieDetails = async () => {
-        // Fetch movie details from our API
-        // The actual URL would be constructed using environment variables, e.g.:
-        // `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/movie/${id}`
-       
-        const url = `${API_CONFIG.TMDB_BASE_URL}/movie/${id}?api_key=${API_CONFIG.TMDB_API_KEY}`;
+export default function MoviePage({ params }: { params: { id: string } }) {
+  const [movie, setMovie] = useState<MovieDetails | null>(null);
+  const [userRating, setUserRating] = useState<number | undefined>(undefined);
 
-        console.log(url);
-        const response = await fetch(url);
-        const data = await response.json();
-        setMovieData(data);
+  useEffect(() => {
+    const fetchMovieDetails = async () => {
+      const url = `${API_CONFIG.TMDB_BASE_URL}/movie/${params.id}?language=en-US`;
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${API_CONFIG.TMDB_ACCESS_TOKEN}`
+        }
       };
-  
-      if (id) {
-        fetchMovieDetails();
+
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setMovie(data);
+      } catch (error) {
+        console.error('Error fetching movie details:', error);
       }
-    }, [id]);
+    };
 
-  // Function to handle user rating submission
-  const handleRatingSubmit = async (rating: number) => {
-    // TODO: Implement rating submission logic
-    // The API endpoint would typically be defined in an environment variable:
-    // await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/rate-movie/${id}`, {
-    //   method: 'POST',
-    //   body: JSON.stringify({ rating }),
-    // });
-    setUserRating(rating);
-  };
+    fetchMovieDetails();
+  }, [params.id]);
 
-  // Show loading state if movie data hasn't been fetched yet
-  if (!movieData) {
-    return <div className={styles.loading}>Loading...</div>;
+  if (!movie) {
+    return <div>Loading...</div>;
   }
 
-  // Render the movie details
   return (
-    <div className={styles.moviePage}>
-      {/* Movie title and release year */}
-      <div className={styles.movieHeader}>
-        <h1>{movieData.title}</h1>
-        <p className={styles.releaseYear}>({new Date(movieData.release_date).getFullYear()})</p>
-      </div>
-      
+    <div className={styles.movieDetailsContainer}>
+      <h1 className={styles.movieTitle}>{movie.title}</h1>
       <div className={styles.movieContent}>
-        {/* Movie poster */}
-        <div className={styles.posterContainer}>
-          {movieData.poster_path ? (
-            <Image 
-              // The base URL for images would typically come from an environment variable:
-              // src={`${process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE_URL}/w500${movieData.poster_path}`}
-              src={`https://image.tmdb.org/t/p/w500${movieData.poster_path}`}
-              alt={`${movieData.title} poster`}
-              width={300}
-              height={450}
-              className={styles.poster}
+        {movie.poster_path && (
+          <Image
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            alt={movie.title}
+            width={300}
+            height={450}
+            className={styles.moviePoster}
+          />
+        )}
+        <div className={styles.movieInfo}>
+          <p className={styles.movieOverview}>{movie.overview}</p>
+          <p className={styles.movieReleaseDate}>Release Date: {movie.release_date}</p>
+          <p className={styles.movieRating}>TMDB Rating: {movie.vote_average.toFixed(1)}</p>
+          <div className={styles.userRatingContainer}>
+            <h3 className={styles.userRatingTitle}>Your Rating:</h3>
+            <RatingStars
+              mediaId={movie.id}
+              mediaType="movie"
+              currentRating={userRating}
+              onRatingChange={setUserRating}
             />
-          ) : (
-            <div className={styles.noPoster}>No poster available</div>
-          )}
-        </div>
-        
-        <div className={styles.movieDetails}>
-          {/* Average rating display */}
-          <div className={styles.ratings}>
-            <div className={styles.averageRating}>
-              <h3>Average Rating</h3>
-              {movieData.vote_average !== undefined ? (
-                <>
-                  <p>{movieData.vote_average.toFixed(1)} / 10</p>
-                  <p className={styles.voteCount}>({movieData.vote_count} votes)</p>
-                </>
-              ) : (
-                <p>No ratings yet</p>
-              )}
-            </div>
-            
-            {/* User rating input */}
-            <div className={styles.userRating}>
-              <h3>Your Rating</h3>
-              {userRating ? (
-                <p>{userRating} / 10</p>
-              ) : (
-                <div className={styles.ratingButtons}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                    <button 
-                      key={rating} 
-                      onClick={() => handleRatingSubmit(rating)}
-                      className={styles.ratingButton}
-                    >
-                      {rating}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Movie overview */}
-          <div className={styles.overview}>
-            <h3>Overview</h3>
-            <p>{movieData.overview}</p>
-          </div>
-          
-          {/* Release date information */}
-          <div className={styles.releaseInfo}>
-            <h3>Release Date</h3>
-            <p>{new Date(movieData.release_date).toLocaleDateString()}</p>
           </div>
         </div>
       </div>

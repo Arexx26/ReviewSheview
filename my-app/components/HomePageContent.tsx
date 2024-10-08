@@ -1,5 +1,5 @@
 'use client';
-
+import { Session } from 'next-auth';
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import { API_CONFIG } from '@/config/api';
 import styles from '../app/HomePage/HomePage.module.css';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import RatingStars from './RatingStars';
 
 interface Media {
   id: number;
@@ -15,12 +16,20 @@ interface Media {
   poster_path: string | null;
 }
 
+interface CustomSession extends Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  }
 export default function HomePageContent() {
   const [popularMovies, setPopularMovies] = useState<Media[]>([]);
   const [popularTVSeries, setPopularTVSeries] = useState<Media[]>([]);
   const movieRowRef = useRef<HTMLDivElement>(null);
   const tvRowRef = useRef<HTMLDivElement>(null);
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: CustomSession | null };
 
   useEffect(() => {
     const fetchPopularMedia = async (mediaType: 'movie' | 'tv', setter: React.Dispatch<React.SetStateAction<Media[]>>) => {
@@ -115,15 +124,11 @@ export default function HomePageContent() {
               )}
               <p className={styles.mediaTitle}>{media.title || media.name}</p>
             </Link>
-            <div className={styles.ratingContainer}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={styles.star}
-                  onClick={() => handleRating(media.id, type, star)}
-                />
-              ))}
-            </div>
+            <RatingStars
+              mediaId={media.id}
+              mediaType={type}
+              onRatingChange={() => {}}
+            />
           </div>
         ))}
       </div>
