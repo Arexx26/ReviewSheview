@@ -102,6 +102,7 @@
    model Media {
      id           Int           @id @default(autoincrement())
      title        String
+     type         String        // Add this line if not already present
      ratings      Rating[]
      groupRatings GroupRating[]
      // Add other fields as necessary
