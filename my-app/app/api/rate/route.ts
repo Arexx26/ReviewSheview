@@ -1,53 +1,39 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { adminAuth, adminFirestore } from '@/lib/firebaseAdmin';
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { mediaId: rawMediaId, rating } = await req.json();
-  const mediaId = parseInt(rawMediaId, 10);
-
+  const idToken = authHeader.split('Bearer ')[1];
   try {
-    // First, try to find the media
-    let media = await prisma.media.findUnique({
-      where: { id: mediaId },
-    });
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    const userId = decodedToken.uid;
 
-    // If media doesn't exist, create it
-    if (!media) {
-      media = await prisma.media.create({
-        data: {
-          id: mediaId,
-          title: "", // You might want to fetch the title from an external API
-          type: "movie", // Adjust as needed
-        },
+    const { mediaId, rating } = await req.json();
+
+    const mediaRef = adminFirestore.collection('media').doc(mediaId.toString());
+    const mediaDoc = await mediaRef.get();
+
+    if (!mediaDoc.exists) {
+      await mediaRef.set({
+        id: mediaId,
+        title: "",
+        type: "movie",
       });
     }
 
-    // Now upsert the rating
-    const upsertedRating = await prisma.rating.upsert({
-      where: {
-        userId_mediaId: {
-          userId: session.user.id,
-          mediaId: media.id,
-        },
-      },
-      update: {
-        value: rating,
-      },
-      create: {
-        userId: session.user.id,
-        mediaId: media.id,
-        value: rating,
-      },
-    });
+    const ratingRef = adminFirestore.collection('ratings').doc(`${userId}_${mediaId}`);
+    await ratingRef.set({
+      userId,
+      mediaId,
+      value: rating,
+      createdAt: new Date().toISOString(),
+    }, { merge: true });
 
-    return NextResponse.json(upsertedRating);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error submitting rating:', error);
     return NextResponse.json({ error: 'Error submitting rating' }, { status: 500 });

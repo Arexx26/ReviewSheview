@@ -1,22 +1,22 @@
 'use client'
 
-import Link from 'next/link'
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 
 export function Navigation() {
-  const { data: session } = useSession()
+  const { user, signIn, signOut } = useAuth();
 
   return (
     <nav>
       <Link href="/">Home</Link>
       {/* Add other navigation links here */}
-      {session ? (
+      {user ? (
         <>
-          <span>Signed in as {session.user?.email}</span>
-          <button onClick={() => signOut()}>Sign out</button>
+          <span>Signed in as {user.email}</span>
+          <button onClick={signOut}>Sign out</button>
         </>
       ) : (
-        <button onClick={() => signIn()}>Sign in</button>
+        <button onClick={signIn}>Sign in</button>
       )}
     </nav>
   )

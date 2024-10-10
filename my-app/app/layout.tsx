@@ -1,5 +1,5 @@
 import { Providers } from "./providers";
-import AppLayout from '@/components/AppLayout'
+import { AppLayout } from '@/components/AppLayout'
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -12,10 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <AppLayout>{children}</AppLayout>
-        </Providers>
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
-  )
+  );
 }

@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface MediaItem {
     id: string;
@@ -35,7 +34,7 @@ const ScrollableMediaSection: React.FC<ScrollableMediaSectionProps> = ({ title, 
                     onClick={() => scroll('left')}
                     className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2 z-10"
                 >
-                    <ChevronLeft className="h-6 w-6" />
+                    &lt;
                 </button>
                 <div
                     ref={scrollContainerRef}
@@ -59,7 +58,7 @@ const ScrollableMediaSection: React.FC<ScrollableMediaSectionProps> = ({ title, 
                     onClick={() => scroll('right')}
                     className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2 z-10"
                 >
-                    <ChevronRight className="h-6 w-6" />
+                    &gt;
                 </button>
             </div>
         </section>

@@ -1,76 +1,26 @@
-'use client';  // Add this line at the top of the file
+'use client';
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { Home, Search, Users, Star, User } from 'lucide-react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { ReactNode } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
-    const { data: session } = useSession()
+export function AppLayout({ children }: { children: ReactNode }) {
+	const { user, signIn, signOut } = useAuth();
 
-    return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex items-center">
-                            <Link href="/" className="flex-shrink-0 flex items-center">
-                                <Image
-                                    src="/flickmate-logo.png"
-                                    alt="FlickMate Logo"
-                                    width={40}
-                                    height={40}
-                                    className="mr-2"
-                                />
-                                <span className="text-xl font-bold text-indigo-600">FlickMate</span>
-                            </Link>
-                        </div>
-                        <div className="flex items-center">
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main className="flex-grow">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {children}
-                </div>
-            </main>
-
-            <nav className="bg-white shadow-t">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between py-4">
-                        <Link href="/" className="text-gray-600 hover:text-indigo-600">
-                            <Home className="mx-auto h-6 w-6" />
-                            <span className="sr-only">Home</span>
-                        </Link>
-                        <Link href="/search" className="text-gray-600 hover:text-indigo-600">
-                            <Search className="mx-auto h-6 w-6" />
-                            <span className="sr-only">Search</span>
-                        </Link>
-                        <Link href="/groups" className="text-gray-600 hover:text-indigo-600">
-                            <Users className="mx-auto h-6 w-6" />
-                            <span className="sr-only">Groups</span>
-                        </Link>
-                        <Link href="/ratings" className="text-gray-600 hover:text-indigo-600">
-                            <Star className="mx-auto h-6 w-6" />
-                            <span className="sr-only">My Ratings</span>
-                        </Link>
-                        <button 
-                            onClick={() => session ? signOut() : signIn()}
-                            className="text-gray-600 hover:text-indigo-600"
-                        >
-                            <User className="mx-auto h-6 w-6" />
-                            <span className="sr-only">{session ? 'Sign Out' : 'Sign In'}</span>
-                        </button>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    )
+	return (
+		<div>
+			<nav>
+				<Link href="/">Home</Link>
+				{user ? (
+					<>
+						<Link href="/profile">Profile</Link>
+						<button onClick={signOut}>Sign Out</button>
+					</>
+				) : (
+					<button onClick={signIn}>Sign In</button>
+				)}
+			</nav>
+			<main>{children}</main>
+		</div>
+	);
 }

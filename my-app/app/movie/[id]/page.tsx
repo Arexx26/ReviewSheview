@@ -1,80 +1,88 @@
 'use client'; // This directive indicates that this is a client-side component
 
-import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { API_CONFIG } from '@/config/api';
-import styles from '../../HomePage/HomePage.module.css';
-import RatingStars from '@/components/RatingStars';
+import styles from '@/app/HomePage/HomePage.module.css';
 
-// Define the structure of our movie data
-interface MovieDetails {
+interface Movie {
   id: number;
   title: string;
   overview: string;
-  poster_path: string | null;
+  poster_path: string;
   release_date: string;
   vote_average: number;
 }
 
-export default function MoviePage({ params }: { params: { id: string } }) {
-  const [movie, setMovie] = useState<MovieDetails | null>(null);
-  const [userRating, setUserRating] = useState<number | undefined>(undefined);
+const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+
+async function fetchMovieDetails(id: string): Promise<Movie> {
+  const response = await fetch(
+    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US`
+  );
+  return await response.json();
+}
+
+export default function MovieDetailsPage() {
+  const { id } = useParams() as { id: string };
+  const { user, signIn } = useAuth();
+  const [movie, setMovie] = useState<Movie | null>(null);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
-      const url = `${API_CONFIG.TMDB_BASE_URL}/movie/${params.id}?language=en-US`;
-      const options = {
-        method: 'GET',
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${API_CONFIG.TMDB_ACCESS_TOKEN}`
-        }
-      };
+    if (id) {
+      fetchMovieDetails(id).then(setMovie);
+    }
+  }, [id]);
 
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setMovie(data);
-      } catch (error) {
-        console.error('Error fetching movie details:', error);
-      }
-    };
+  const handleRatingSubmit = async () => {
+    if (!user) {
+      alert('Please sign in to submit a rating');
+      return;
+    }
 
-    fetchMovieDetails();
-  }, [params.id]);
+    try {
+      // Implement your rating submission logic here
+      console.log(`Submitting rating ${rating} for movie ${id}`);
+      alert('Rating submitted successfully');
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      alert('Failed to submit rating');
+    }
+  };
 
-  if (!movie) {
-    return <div>Loading...</div>;
-  }
+  if (!movie) return <div>Loading...</div>;
 
   return (
     <div className={styles.movieDetailsContainer}>
       <h1 className={styles.movieTitle}>{movie.title}</h1>
       <div className={styles.movieContent}>
-        {movie.poster_path && (
-          <Image
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            alt={movie.title}
-            width={300}
-            height={450}
-            className={styles.moviePoster}
-          />
-        )}
+        <Image
+          src={`${IMAGE_BASE_URL}${movie.poster_path}`}
+          alt={movie.title}
+          width={300}
+          height={450}
+          className={styles.moviePoster}
+        />
         <div className={styles.movieInfo}>
           <p className={styles.movieOverview}>{movie.overview}</p>
           <p className={styles.movieReleaseDate}>Release Date: {movie.release_date}</p>
-          <p className={styles.movieRating}>TMDB Rating: {movie.vote_average.toFixed(1)}</p>
+          <p className={styles.movieRating}>Average Rating: {movie.vote_average.toFixed(1)}</p>
           <div className={styles.userRatingContainer}>
-            <h3 className={styles.userRatingTitle}>Your Rating:</h3>
-            <RatingStars
-              mediaId={movie.id}
-              mediaType="movie"
-              currentRating={userRating}
-              onRatingChange={setUserRating}
+            <h2 className={styles.userRatingTitle}>Rate this movie</h2>
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
             />
+            <button onClick={handleRatingSubmit}>
+              {user ? 'Submit Rating' : 'Sign in to Rate'}
+            </button>
           </div>
         </div>
       </div>
