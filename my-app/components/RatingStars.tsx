@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import styles from '../app/HomePage/HomePage.module.css';
 
 interface RatingStarsProps {
   initialRating?: number;
@@ -10,6 +11,7 @@ interface RatingStarsProps {
 
 export function RatingStars({ initialRating = 0, onRate, mediaId, mediaType }: RatingStarsProps) {
   const [rating, setRating] = useState(initialRating);
+  const [hover, setHover] = useState(0);
   const { user } = useAuth();
 
   const handleRate = (newRating: number) => {
@@ -19,21 +21,24 @@ export function RatingStars({ initialRating = 0, onRate, mediaId, mediaType }: R
     }
     setRating(newRating);
     onRate(newRating);
-    // Here you can add logic to submit the rating to your backend
-    console.log(`Submitting rating ${newRating} for ${mediaType} ${mediaId}`);
   };
 
   return (
-    <div>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          onClick={() => handleRate(star)}
-          style={{ cursor: 'pointer', color: star <= rating ? 'gold' : 'gray' }}
-        >
-          ★
-        </span>
-      ))}
+    <div className={styles.ratingStars}>
+      {[...Array(5)].map((_, index) => {
+        const ratingValue = index + 1;
+        return (
+          <span
+            key={index}
+            className={`${styles.star} ${ratingValue <= (hover || rating) ? styles.starFilled : ''}`}
+            onClick={() => handleRate(ratingValue)}
+            onMouseEnter={() => setHover(ratingValue)}
+            onMouseLeave={() => setHover(0)}
+          >
+            ★
+          </span>
+        );
+      })}
     </div>
   );
 }
